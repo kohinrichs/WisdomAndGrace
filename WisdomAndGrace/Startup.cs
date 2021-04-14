@@ -25,7 +25,7 @@ namespace WisdomAndGrace
             services.AddTransient<IUserProfileRepository, UserProfileRepository>();
             services.AddTransient<IQuoteRepository, QuoteRepository>();
 
-            var firebaseProjectId = "wisdomandgrace-877f2";
+            var firebaseProjectId = Configuration.GetValue<string>("FirebaseProjectId");
             var googleTokenUrl = $"https://securetoken.google.com/{firebaseProjectId}";
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -44,30 +44,30 @@ namespace WisdomAndGrace
 
             services.AddControllers();
 
-            //services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WisdomAndGrace", Version = "v1" });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WisdomAndGrace", Version = "v1" });
 
-            //    var securitySchema = new OpenApiSecurityScheme
-            //    {
-            //        Name = "Authorization",
-            //        BearerFormat = "JWT",
-            //        Description = "JWT Authorization header using the Bearer scheme.",
-            //        Type = SecuritySchemeType.ApiKey,
-            //        In = ParameterLocation.Header,
-            //        Reference = new OpenApiReference
-            //        {
-            //            Id = "Bearer",
-            //            Type = ReferenceType.SecurityScheme,
-            //        }
-            //    };
+                var securitySchema = new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    BearerFormat = "JWT",
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Reference = new OpenApiReference
+                    {
+                        Id = "Bearer",
+                        Type = ReferenceType.SecurityScheme,
+                    }
+                };
 
-            //    c.AddSecurityDefinition("Bearer", securitySchema);
-            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            //    {
-            //        { securitySchema, new[] { "Bearer"} }
-            //    });
-            //});
+                c.AddSecurityDefinition("Bearer", securitySchema);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { securitySchema, new[] { "Bearer"} }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,8 +76,8 @@ namespace WisdomAndGrace
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseSwagger();
-                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WisdomAndGrace v1"));
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WisdomAndGrace v1"));
             }
 
             app.UseHttpsRedirection();
